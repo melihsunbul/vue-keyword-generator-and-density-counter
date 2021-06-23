@@ -74,8 +74,10 @@
                 this.words = this.words.map(word => word.toLowerCase().trim());
                 this.words = this.words.filter(word => !this.filterArr.includes(word));
 
+
                 for (let k = 0; k < this.grams.length; k++) {
                     this.keywords[this.grams[k]] = [];
+
                     for (let i = 0; i < this.words.length; i++) {
                         let keyword = '';
 
@@ -105,10 +107,11 @@
         },
         watch: {
             grams(){
+
                 if (this.words.length !== 0) {
                     this.createKeywords();
                 }
-                console.log(this.grams);
+
             },
         },
 
