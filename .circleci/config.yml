@@ -1,3 +1,16 @@
 version: 2.1
 orbs:
   ma-node: mobileaction/ma-node@1.3.0
+
+workflows:
+  main_workflow:
+    jobs:
+      - ma-node/deps
+      - ma-node/build:
+          requires: [ma-node/deps]
+      - ma-node/lint:
+          yarn_command: lint:all-report
+          requires: [ma-node/deps]
+          filters:
+            branches:
+              ignore: master
