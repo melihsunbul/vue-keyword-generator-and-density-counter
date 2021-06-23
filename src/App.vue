@@ -18,6 +18,7 @@
             </p>
         </div>
         <div id="filterWords">
+            <h3>Filter Words</h3>
             <el-input v-model.trim="filterWords" type="text"/>
             <p>Please enter words buy putting , between words.</p>
             <el-button @click="createKeywords">
@@ -37,7 +38,9 @@
 
         <div id="gram">
             <div v-for="gramName in grams" :key="gramName">
-                <h4>{{ gramName }}</h4>
+                <h4 v-if="words.length !== 0">
+                    {{ gramName }}
+                </h4>
                 <el-tag v-for="(word, index) in keywords[gramName]" :key="index" class="tag">
                     {{ word }}
                 </el-tag>
@@ -75,12 +78,16 @@
                     this.keywords[this.grams[k]] = [];
                     for (let i = 0; i < this.words.length; i++) {
                         let keyword = '';
+
                         for (let j = 0; j<this.grams[k]; j++){
                             if (i + j <= this.words.length - 1) {
                                 keyword += this.words[i + j] + ' ';
                             }
                         }
-                        this.keywords[this.grams[k]].push(keyword);
+                        let checkArr = keyword.split(' ');
+                        if (checkArr.length > this.grams[k]) {
+                            this.keywords[this.grams[k]].push(keyword);
+                        }
                         keyword = '';
                     }
                 }
@@ -109,11 +116,13 @@
 </script>
 
 <style>
-#input {
-text-align: center
+#input,
+#filterWords {
+text-align: center;
+margin: 20px 20px;
 }
 #gram {
-  width: 100vw;
+  width: 90vw;
   overflow: scroll;
   display: flex;
   justify-content: space-around;
