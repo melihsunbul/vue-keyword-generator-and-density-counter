@@ -7,6 +7,7 @@ import FontAwesomeIcon from './fontAwesome';
 import ElementUI from 'element-ui';
 import 'element-ui/lib/theme-chalk/index.css';
 
+import 'tailwindcss/tailwind.css';
 
 
 Vue.component('font-awesome-icon', FontAwesomeIcon);

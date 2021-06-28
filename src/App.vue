@@ -1,8 +1,10 @@
 
 <template>
     <div>
-        <div class="input">
-            <h3>Set Description</h3>
+        <div class="text-center mx-20 my-20">
+            <h1>
+                Set Description
+            </h1>
             <el-input
                 v-model="plainDesc"
                 type="textarea"
@@ -17,7 +19,7 @@
                 Description sent
             </p>
         </div>
-        <div class="update">
+        <div class="text-center mx-20 my-20">
             <h3>Filter Words</h3>
             <el-input v-model.trim="filterWords" type="text"/>
             <p>Please enter words buy putting , between words.</p>
@@ -36,13 +38,13 @@
             </el-checkbox-group>
         </div>
 
-        <div class="gram">
+        <div class="w-screen flex overflow-scroll justify-around">
             <div v-for="gramName in sortedGrams" :key="gramName">
                 <h4 v-if="words.length !== 0">
                     {{ gramName }}
                 </h4>
                 <div>
-                    <el-tag v-for="(word, index) in keywords[gramName]" :key="index" class="tag">
+                    <el-tag v-for="(word, index) in keywords[gramName]" :key="index" class="mx-5 my-5">
                         {{ word }}
                     </el-tag>
                 </div>
@@ -91,7 +93,6 @@
 
                 this.words = this.plainDesc.trim().toLowerCase().split(/[(\r\n|\r|\n)\s+\t]/g);
                 this.words = this.words.filter(word => !this.filterArr.includes(word) && word !== '');
-                //this.words = this.words.map(word => word.trim());
 
 
 
@@ -117,7 +118,7 @@
 
             },
             saveInput(){
-                const regex = /[!•"#$%&'*+,./:;=?@^`|~]/g;
+                const regex = /[!•"#$%&'’*+,./:;=?@^`|~]/g;
                 const splitRegex = /[.*[({\-_><\].*[({\-_><\]?=.*?[)}\-_><\].*?[)}\-_><\]|[({\-_><\]?<=.*?[({\-_><\].*?[)}\-_><\].*[)}\-_><\].*]/g;
                 this.plainDesc = this.plainDesc.replace(regex, '');
                 this.plainDesc = this.plainDesc.replace(splitRegex, ' ');
@@ -155,10 +156,7 @@
   display: flex;
   justify-content: space-around;
 }
-li {
-  list-style-type:none;
 
-}
 .tag {
   margin: 5px 5px ;
 }
