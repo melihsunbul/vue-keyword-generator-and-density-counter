@@ -10,7 +10,7 @@
                 placeholder="Please enter your app description"
                 autofocus
             />
-            <el-button :disabled="words.length !== 0" @click="saveInput">
+            <el-button :disabled="isDescChanged" @click="saveInput">
                 <font-awesome-icon :icon="['fas', 'paper-plane']"/> Send Description
             </el-button>
             <p v-if="words.length !== 0">
@@ -37,16 +37,15 @@
         </div>
 
         <div class="gram">
-            <div v-for="gramName in grams" :key="gramName">
+            <div v-for="gramName in sortedGrams" :key="gramName">
                 <h4 v-if="words.length !== 0">
                     {{ gramName }}
                 </h4>
-                <div v-if="filterArr.length !== 0">
+                <div>
                     <el-tag v-for="(word, index) in keywords[gramName]" :key="index" class="tag">
                         {{ word }}
                     </el-tag>
                 </div>
-                <div v-else/>
             </div>
         </div>
     </div>
@@ -64,6 +63,7 @@
                 grams: [],
                 keywords: [],
                 words: [],
+                isDescSame: true,
                 isDisabled: true,
             };
         },
@@ -71,19 +71,28 @@
             isClickable(){
                 return this.isDisabled || this.words.length === 0;
             },
+            sortedGrams(){
+                let sortedGrams = this.grams.slice(0);
+                sortedGrams.sort();
+                return sortedGrams;
+            },
+            isDescChanged(){
+                return this.plainDesc.length === 0 || this.isDescSame;
+            },
 
         },
         methods: {
             createKeywords() {
-
+                this.isDescSame = true;
                 this.filterArr = this.filterWords.split(',');
                 this.filterArr = this.filterArr.map(word => word.toLowerCase());
                 this.words = [];
                 this.keywords = [];
 
-                this.words = this.plainDesc.split(' ');
-                this.words = this.words.map(word => word.toLowerCase().trim());
-                this.words = this.words.filter(word => !this.filterArr.includes(word));
+                this.words = this.plainDesc.trim().toLowerCase().split(/[(\r\n|\r|\n)\s+\t]/g);
+                this.words = this.words.filter(word => !this.filterArr.includes(word) && word !== '');
+                //this.words = this.words.map(word => word.trim());
+
 
 
                 for (let k = 1; k <= 10; k++) {
@@ -108,25 +117,26 @@
 
             },
             saveInput(){
-                const regex = /[!•"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]/g;
+                const regex = /[!•"#$%&'*+,./:;=?@^`|~]/g;
+                const splitRegex = /[.*[({\-_><\].*[({\-_><\]?=.*?[)}\-_><\].*?[)}\-_><\]|[({\-_><\]?<=.*?[({\-_><\].*?[)}\-_><\].*[)}\-_><\].*]/g;
                 this.plainDesc = this.plainDesc.replace(regex, '');
+                this.plainDesc = this.plainDesc.replace(splitRegex, ' ');
                 this.createKeywords();
             },
-        },
-        beforeUpdate(){
-            this.grams.sort((a,b) => {
-                return a-b;
-            });
+
         },
         watch: {
             plainDesc(){
                 this.isDisabled = false;
+                this.isDescSame = false;
             },
             filterWords(){
+
                 this.isDisabled = false;
             },
             words(){
                 this.isDisabled = true;
+                this.isDescSame = true;
             },
         },
 
