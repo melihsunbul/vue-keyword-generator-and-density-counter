@@ -1,142 +1,159 @@
-
+/* eslint-disable */
 <template>
-    <div>
-        <div class="text-center mx-20 my-20">
-            <h1>
-                Set Description
-            </h1>
+    <div class="w-screen sm:flex sm:justify-around">
+        <div class="w-full sm:w-2/5">
             <el-input
                 v-model="plainDesc"
                 type="textarea"
-                :rows="10"
                 placeholder="Please enter your app description"
                 autofocus
+                rows="15"
             />
-            <el-button :disabled="isDescChanged" @click="saveInput">
-                <font-awesome-icon :icon="['fas', 'paper-plane']"/> Send Description
-            </el-button>
-            <p v-if="words.length !== 0">
-                Description sent
-            </p>
-        </div>
-        <div class="text-center mx-20 my-20">
-            <h3>Filter Words</h3>
-            <el-input v-model.trim="filterWords" type="text"/>
-            <p>Please enter words buy putting , between words.</p>
-            <el-button :disabled="isClickable" @click="createKeywords">
-                Update/Filter
-            </el-button>
-        </div>
-        <div>
-            <el-checkbox-group v-model="grams">
-                <el-checkbox
-                    v-for="i in 10" :key="i + '-gram'"
-                    :label="i"
+            <div class="flex justify-between items-center">
+                <el-button
+                    :disabled="isDescChanged" class="bg-red-500 text-white"
+                    @click="saveInput"
                 >
-                    {{ i }}-gram
-                </el-checkbox>
-            </el-checkbox-group>
-        </div>
-
-        <div class="w-screen flex overflow-scroll justify-around">
-            <div v-for="gramName in sortedGrams" :key="gramName">
-                <h4 v-if="words.length !== 0">
-                    {{ gramName }}
-                </h4>
-                <div>
-                    <el-tag v-for="(word, index) in keywords[gramName]" :key="index" class="mx-5 my-5">
-                        {{ word }}
-                    </el-tag>
-                </div>
+                    Count
+                </el-button>
+                <p>
+                    Total Characters: <span class="font-bold text-lg">{{ countChar }}</span>
+                </p>
             </div>
+        </div>
+        <div class="w-auto">
+            <el-table
+                :data="keywords"
+                :row-class-name="tableRowClassName"
+                header-row-class-name="el-table-header"
+            >
+                <el-table-column
+                    prop="name"
+                    label="Keyword"
+                    width="360"
+                />
+                <el-table-column
+                    prop="count"
+                    label="Count"
+                    width="90"
+                />
+                <el-table-column
+                    prop="density"
+                    label="Density"
+                    width="90"
+                />
+                <div slot="empty">
+                    <i class="el-icon-warning-outline">No Data</i>
+                </div>
+            </el-table>
+            <el-button
+                v-clipboard:copy="copyKeywords"
+                class="bg-blue-500 text-white mt-5"
+            >
+                Copy To Clipboard
+            </el-button>
         </div>
     </div>
 </template>
 
 <script>
 
+
+    import { regex,splitRegex, filterArr } from './cleanupResources';
     export default {
-        name: 'app',
+
         data(){
             return {
                 plainDesc: '',
-                filterWords: '',
-                filterArr: [],
-                grams: [],
                 keywords: [],
                 words: [],
+                filteredWords: [],
+                copyKeywords: '',
                 isDescSame: true,
-                isDisabled: true,
             };
         },
         computed: {
-            isClickable(){
-                return this.isDisabled || this.words.length === 0;
-            },
-            sortedGrams(){
-                let sortedGrams = this.grams.slice(0);
-                sortedGrams.sort();
-                return sortedGrams;
-            },
             isDescChanged(){
                 return this.plainDesc.length === 0 || this.isDescSame;
             },
+            countChar(){
+                return this.plainDesc.length;
+            },
+
 
         },
         methods: {
-            createKeywords() {
+            /*eslint no-unused-vars: ["error", { "argsIgnorePattern": "^_" }]*/
+            tableRowClassName({ _, rowIndex }) {
+                if (rowIndex % 2 === 0) {
+                    return 'even-row';
+                } else {
+                    return 'odd-row';
+                }
+            },
+            createKeywords(description) {
                 this.isDescSame = true;
-                this.filterArr = this.filterWords.split(',');
-                this.filterArr = this.filterArr.map(word => word.toLowerCase());
+
                 this.words = [];
                 this.keywords = [];
 
-                this.words = this.plainDesc.trim().toLowerCase().split(/[(\r\n|\r|\n)\s+\t]/g);
-                this.words = this.words.filter(word => !this.filterArr.includes(word) && word !== '');
+                this.words = description.trim().toLowerCase().split(/[(\r\n|\r|\n)\s+\t]/g);
+                this.filteredWords = this.words.filter(word => !filterArr.includes(word) && word !== '');
 
-
-
-                for (let k = 1; k <= 10; k++) {
-                    this.keywords[k] = new Set();
-
-                    for (let i = 0; i < this.words.length; i++) {
-                        let keyword = '';
-
-                        for (let j = 0; j<k; j++){
-                            if (i + j <= this.words.length - 1) {
-                                keyword += this.words[i + j] + ' ';
-                            }
-                        }
-                        let checkArr = keyword.split(' ');
-                        if (checkArr.length > k) {
-                            this.keywords[k].add(keyword);
-                        }
-
-                        keyword = '';
+                for (let i = 0; i < this.filteredWords.length; i++) {
+                    let keyword = this.filteredWords[i];
+                    let isExist = this.search(keyword, this.keywords);
+                    if ( isExist == null){
+                        this.keywords.push({
+                            count: 1,
+                            name: keyword,
+                            density: 0,
+                        });
+                    } else {
+                        this.keywords[isExist].count++;
+                        this.keywords[isExist].density = (100 * this.keywords[isExist].count / this.words.length).toFixed(2);
                     }
+
+                    keyword = '';
                 }
+                this.keywords = this.keywords.filter(function( obj ) {
+                    return obj.count > 1;
+                }).sort((a,b) => {
+                    return b.count - a.count;
+                }).reduce((a, i) => {
+                    const f = a.find(f => f.count === i.count);
+                    if (!f) {
+                        a.push(i);
+                    } else {
+                        f.name += ',' + i.name;
+                    }
+                    return a;
+                }, []);
+
+                this.copyKeywords = this.keywords.map(e => e.name).join(',');
 
             },
             saveInput(){
-                const regex = /[!•"#$%&'’*+,./:;=?@^`|~]/g;
-                const splitRegex = /[.*[({\-_><\].*[({\-_><\]?=.*?[)}\-_><\].*?[)}\-_><\]|[({\-_><\]?<=.*?[({\-_><\].*?[)}\-_><\].*[)}\-_><\].*]/g;
-                this.plainDesc = this.plainDesc.replace(regex, '');
-                this.plainDesc = this.plainDesc.replace(splitRegex, ' ');
-                this.createKeywords();
+                let description = '';
+                description= this.plainDesc.replace(regex, '');
+                description = description.replace(splitRegex, ' ');
+                this.createKeywords(description);
+            },
+            search(nameKey, myArray){
+                for (let i=0; i < myArray.length; i++) {
+                    if (myArray[i].name === nameKey) {
+                        return i;
+                    }
+                }
+                return null;
             },
 
         },
         watch: {
             plainDesc(){
-                this.isDisabled = false;
                 this.isDescSame = false;
             },
-            filterWords(){
-
-                this.isDisabled = false;
-            },
             words(){
-                this.isDisabled = true;
                 this.isDescSame = true;
             },
         },
@@ -145,19 +162,13 @@
 </script>
 
 <style>
-.input,
-.update {
-  text-align: center;
-  margin: 20px 20px;
+.el-table .even-row {
+  @apply bg-white text-black;
 }
-.gram {
-  width: 100vw;
-  overflow: scroll;
-  display: flex;
-  justify-content: space-around;
+.el-table .odd-row {
+  @apply bg-gray-200 text-black;
 }
-
-.tag {
-  margin: 5px 5px ;
+tr.el-table-header > th {
+  @apply bg-blue-500 text-white;
 }
 </style>
