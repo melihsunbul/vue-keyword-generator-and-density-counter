@@ -1,56 +1,71 @@
 
 <template>
-    <div class="w-screen sm:flex sm:justify-around">
-        <div class="w-full sm:w-2/5">
-            <el-input
-                v-model="plainDesc"
-                type="textarea"
-                placeholder="Please enter your app description"
-                autofocus
-                rows="15"
-            />
-            <div class="flex justify-between items-center">
-                <el-button
-                    :disabled="isDescChanged" class="bg-red-500 text-white"
-                    @click="saveInput"
-                >
-                    Count
-                </el-button>
-                <p>
-                    Total Characters: <span class="font-bold text-lg">{{ countChar }}</span>
-                </p>
-            </div>
+    <div class="w-screen">
+        <div class="text-center text-white mb-20 bg-blue-700 p-10">
+            <h1 class="mb-10">
+                Keyword Density Counter
+            </h1>
+            <h3 class="font-normal">
+                Quickly count how many times a keyword is repeated in your app’s long description.
+            </h3>
         </div>
-        <div class="w-auto ma-table">
-            <el-table
-                :data="keywords"
-                :row-class-name="tableRowClassName"
-            >
-                <el-table-column
-                    prop="name"
-                    label="Keyword"
-                    width="360"
+        <div class="bg-gray-100 flex items-center justify-center mb-10 p-10">
+            <h3 class="font-normal w-3/4">
+                Maintaining a good keyword density for your most relevant keywords in your app’s long description is good ASO practice, especially when optimizing your app to rank in the Google Play Store. Use this Keyword Density Counter to review the density on your top keywords.
+            </h3>
+        </div>
+        <div class="sm:flex sm:justify-around">
+            <div class="w-screen sm:w-2/5">
+                <el-input
+                    v-model="plainDesc"
+                    type="textarea"
+                    placeholder="Please enter your app description"
+                    autofocus
+                    rows="15"
                 />
-                <el-table-column
-                    prop="count"
-                    label="Count"
-                    width="90"
-                />
-                <el-table-column
-                    prop="density"
-                    label="Density"
-                    width="90"
-                />
-                <div slot="empty">
-                    <i class="el-icon-warning-outline">No Data</i>
+                <div class="flex justify-between items-center">
+                    <el-button
+                        :disabled="isDescChanged" class="bg-red-500 text-white"
+                        @click="saveInput"
+                    >
+                        Count
+                    </el-button>
+                    <p>
+                        Total Characters: <span class="font-bold text-lg">{{ countChar }}</span>
+                    </p>
                 </div>
-            </el-table>
-            <el-button
-                v-clipboard:copy="copyKeywords"
-                class="bg-blue-500 text-white mt-5"
-            >
-                Copy To Clipboard
-            </el-button>
+            </div>
+            <div class="w-auto ma-table">
+                <el-table
+                    :data="keywords"
+                    :row-class-name="tableRowClassName"
+                >
+                    <el-table-column
+                        prop="name"
+                        label="Keyword"
+                        width="360"
+                    />
+                    <el-table-column
+                        prop="count"
+                        label="Count"
+                        width="90"
+                    />
+                    <el-table-column
+                        prop="density"
+                        label="Density"
+                        width="90"
+                    />
+                    <div slot="empty">
+                        <i class="el-icon-warning-outline">No Data</i>
+                    </div>
+                </el-table>
+                <el-button
+                    v-clipboard:copy="copyKeywords"
+                    class="bg-blue-500 text-white mt-5"
+                >
+                    Copy To Clipboard
+                </el-button>
+            </div>
         </div>
     </div>
 </template>
@@ -110,7 +125,7 @@
                         });
                     } else {
                         this.keywords[isExist].count++;
-                        this.keywords[isExist].density = (100 * this.keywords[isExist].count / this.words.length).toFixed(2);
+                        this.keywords[isExist].density = '%' + (100 * this.keywords[isExist].count / this.words.length).toFixed(2);
                     }
 
                     keyword = '';
