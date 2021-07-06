@@ -18,8 +18,7 @@ module.exports = {
     plugins: [
         new GoogleFontsPlugin({
             fonts: [
-                { family: 'Source Sans Pro' },
-                { family: 'Roboto', variants: ['400', '700italic'] },
+                { family: 'Hind Vadodara', variants: ['400'] },
             ],
         }),
     ],

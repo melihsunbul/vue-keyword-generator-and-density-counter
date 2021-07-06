@@ -1,4 +1,3 @@
-
 <template>
     <div>
         <div class="text-center mx-20 my-20">
@@ -13,7 +12,8 @@
                 autofocus
             />
             <el-button :disabled="isDescChanged" class="mt-10" @click="saveInput">
-                <font-awesome-icon :icon="['fas', 'paper-plane']"/> Send Description
+                <font-awesome-icon :icon="['fas', 'paper-plane']"/>
+                Send Description
             </el-button>
             <p v-if="words.length !== 0">
                 Description sent
@@ -53,11 +53,11 @@
 </template>
 
 
-
 <script>
-    import { regex,splitRegex } from '../cleanupResources';
+    import { regex, splitRegex } from '../cleanupResources';
+
     export default {
-        data(){
+        data() {
             return {
                 plainDesc: '',
                 keywords: [],
@@ -70,15 +70,13 @@
             };
         },
         computed: {
-            isClickable(){
+            isClickable() {
                 return this.isDisabled || this.words.length === 0;
             },
-            sortedGrams(){
-                let sortedGrams = this.grams.slice(0);
-                sortedGrams.sort();
-                return sortedGrams;
+            sortedGrams() {
+                return this.grams.slice().sort();
             },
-            isDescChanged(){
+            isDescChanged() {
                 return this.plainDesc.length === 0 || this.isDescSame;
             },
 
@@ -95,45 +93,36 @@
                 this.words = this.words.filter(word => !this.filterArr.includes(word) && word !== '');
 
 
-
                 for (let k = 1; k <= 10; k++) {
                     this.keywords[k] = new Set();
 
-                    for (let i = 0; i < this.words.length; i++) {
+                    for (let i = 0; i <= this.words.length - k; i++) {
                         let keyword = '';
 
-                        for (let j = 0; j<k; j++){
-                            if (i + j <= this.words.length - 1) {
-                                keyword += this.words[i + j] + ' ';
-                            }
+                        for (let j = 0; j < k; j++) {
+                            keyword += this.words[i + j] + ' ';
                         }
-                        let checkArr = keyword.split(' ');
-                        if (checkArr.length > k) {
-                            this.keywords[k].add(keyword);
-                        }
-
+                        this.keywords[k].add(keyword);
                         keyword = '';
                     }
                 }
-
             },
-            saveInput(){
-                this.plainDesc = this.plainDesc.replace(regex, '');
-                this.plainDesc= this.plainDesc.replace(splitRegex, ' ');
+            saveInput() {
+                this.plainDesc = this.plainDesc.replace(regex, '').replace(splitRegex, ' ');
                 this.createKeywords();
             },
 
         },
         watch: {
-            plainDesc(){
+            plainDesc() {
                 this.isDisabled = false;
                 this.isDescSame = false;
             },
-            filterWords(){
+            filterWords() {
 
                 this.isDisabled = false;
             },
-            words(){
+            words() {
                 this.isDisabled = true;
                 this.isDescSame = true;
             },

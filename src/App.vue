@@ -1,4 +1,3 @@
-/* eslint-disable */
 <template>
     <div>
         <the-header/>
@@ -10,9 +9,15 @@
     </div>
 </template>
 
+<script>
+    export default {
+
+    };
+</script>
+
 <style>
-html, body {
-  font-family: 'Roboto', sans-serif;
+html, body{
+  margin: 0;
+  padding: 0;
 }
 </style>
-

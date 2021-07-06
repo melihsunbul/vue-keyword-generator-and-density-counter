@@ -10,7 +10,10 @@ module.exports = {
     theme: {
         extend: {
             fontFamily: {
-                roboto: ['"Roboto"', 'sans-serif'],
+                'hind-vadodara': ['"Hind Vadodara"', 'sans-serif'],
+            },
+            backgroundImage: {
+                'header-bg': "url('https://d9hhrg4mnvzow.cloudfront.net/audit.searchads.com/9353016a-ma-background_100000018w0i6048000028.png')",
             },
         },
         colors: {
