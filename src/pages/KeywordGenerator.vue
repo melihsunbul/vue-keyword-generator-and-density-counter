@@ -107,10 +107,7 @@
                 }
             },
             saveInput() {
-                const obj = cleanDescription({
-                    description: this.plainDesc,
-                });
-                this.createKeywords(obj.description);
+                this.createKeywords(cleanDescription(this.plainDesc));
             },
 
         },
