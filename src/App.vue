@@ -2,16 +2,14 @@
     <div>
         <the-header/>
         <div class="w-screen sm:flex sm:justify-around">
-            <div>
-                <router-view/>
-            </div>
+            <router-view/>
         </div>
     </div>
 </template>
 
 <script>
     export default {
-
+        name: 'app',
     };
 </script>
 

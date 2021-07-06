@@ -1,5 +1,5 @@
 <template>
-    <div class="w-screen font-hind-vadodara">
+    <div class="font-hind-vadodara">
         <div class="text-center text-white mb-20 bg-header-bg p-10">
             <h1 class="mb-10">
                 Keyword Density Counter
@@ -13,8 +13,8 @@
                 Maintaining a good keyword density for your most relevant keywords in your app’s long description is good ASO practice, especially when optimizing your app to rank in the Google Play Store. Use this Keyword Density Counter to review the density on your top keywords.
             </h3>
         </div>
-        <div class="w-screen sm:flex sm:justify-around">
-            <div class="w-screen sm:w-2/5">
+        <div class="px-2 sm:flex sm:justify-around">
+            <div class="sm:w-2/5">
                 <el-input
                     v-model="plainDesc"
                     type="textarea"
@@ -34,7 +34,7 @@
                     </p>
                 </div>
             </div>
-            <div class="w-auto ma-table">
+            <div class="ma-table">
                 <el-table
                     :data="keywords"
                     :row-class-name="tableRowClassName"
@@ -42,7 +42,6 @@
                     <el-table-column
                         prop="name"
                         label="Keyword"
-                        width="360"
                     />
                     <el-table-column
                         prop="count"
@@ -70,8 +69,8 @@
 </template>
 
 <script>
-    import { regex,splitRegex, filterArr } from '../cleanupResources';
-
+    import { filterArr } from '../cleanupResources';
+    import { cleanDescription } from '../utils/CleanDescription';
     export default {
         data(){
             return {
@@ -133,8 +132,10 @@
                 this.copyKeywords = this.keywords.map(e => e.name).join(',');
             },
             saveInput(){
-                const description = this.plainDesc.replace(regex, '').replace(splitRegex, ' ').trim().replaceAll('İ', 'i').toLowerCase();
-                this.createKeywords(description);
+                const obj = cleanDescription({
+                    description: this.plainDesc,
+                });
+                this.createKeywords(obj.description);
             },
         },
         watch: {

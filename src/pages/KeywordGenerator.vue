@@ -54,8 +54,7 @@
 
 
 <script>
-    import { regex, splitRegex } from '../cleanupResources';
-
+    import { cleanDescription } from '../utils/CleanDescription';
     export default {
         data() {
             return {
@@ -82,14 +81,14 @@
 
         },
         methods: {
-            createKeywords() {
+            createKeywords(description) {
                 this.isDescSame = true;
                 this.filterArr = this.filterWords.split(',');
                 this.filterArr = this.filterArr.map(word => word.toLowerCase());
                 this.words = [];
                 this.keywords = [];
 
-                this.words = this.plainDesc.trim().toLowerCase().split(/[(\r\n|\r|\n)\s+\t]/g);
+                this.words = description.trim().toLowerCase().split(/[(\r\n|\r|\n)\s+\t]/g);
                 this.words = this.words.filter(word => !this.filterArr.includes(word) && word !== '');
 
 
@@ -108,8 +107,10 @@
                 }
             },
             saveInput() {
-                this.plainDesc = this.plainDesc.replace(regex, '').replace(splitRegex, ' ');
-                this.createKeywords();
+                const obj = cleanDescription({
+                    description: this.plainDesc,
+                });
+                this.createKeywords(obj.description);
             },
 
         },
