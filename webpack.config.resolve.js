@@ -1,4 +1,5 @@
 const path = require('path');
+const GoogleFontsPlugin = require('google-fonts-webpack-plugin');
 function resolve(p = '.') {
     return path.resolve(__dirname, p);
 }
@@ -14,4 +15,11 @@ module.exports = {
         },
         modules: [resolveSrc(), resolve('node_modules'), resolve()],
     },
+    plugins: [
+        new GoogleFontsPlugin({
+            fonts: [
+                { family: 'Hind Vadodara', variants: ['400'] },
+            ],
+        }),
+    ],
 };
